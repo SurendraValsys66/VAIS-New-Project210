@@ -24,7 +24,6 @@ interface LandingPagePreviewProps {
   onUpdateBlock: (blockId: string, properties: Record<string, any>) => void;
   onDeleteBlock: (blockId: string) => void;
   onMoveBlock: (blockId: string, direction: "up" | "down") => void;
-  isPreview?: boolean;
 }
 
 export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
@@ -34,7 +33,6 @@ export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
   onUpdateBlock,
   onDeleteBlock,
   onMoveBlock,
-  isPreview = false,
 }) => {
   const renderBlock = (block: LandingPageBlock, index: number) => {
     const isSelected = selectedBlockId === block.id;
@@ -94,18 +92,16 @@ export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
     return (
       <div
         key={block.id}
-        className={`relative mb-4 transition-all rounded ${
-          isPreview ? "cursor-default" : "cursor-pointer"
-        } group ${
-          isSelected && !isPreview
+        className={`relative mb-4 transition-all rounded cursor-pointer group ${
+          isSelected
             ? "ring-2 ring-valasys-orange shadow-lg"
-            : !isPreview ? "hover:shadow-md" : ""
+            : "hover:shadow-md"
         }`}
-        onClick={() => !isPreview && onSelectBlock(block.id)}
+        onClick={() => onSelectBlock(block.id)}
       >
         {blockContent}
 
-        {isSelected && !isPreview && (
+        {isSelected && (
           <div className="absolute top-2 right-2 flex gap-2 bg-white rounded-lg shadow-lg p-1 z-20">
             <Button
               size="sm"

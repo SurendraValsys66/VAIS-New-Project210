@@ -21,15 +21,11 @@ import { SectionsPanel } from "./SectionsPanel";
 
 interface LandingPageBuilderProps {
   pageId?: string;
-  templateBlocks?: LandingPageBlock[];
-  isPreview?: boolean;
   onBack: () => void;
 }
 
 export const LandingPageBuilder: React.FC<LandingPageBuilderProps> = ({
   pageId,
-  templateBlocks,
-  isPreview,
   onBack,
 }) => {
   const [page, setPage] = useState<LandingPage | null>(null);
@@ -46,18 +42,6 @@ export const LandingPageBuilder: React.FC<LandingPageBuilderProps> = ({
         setPage(foundPage);
         setPageName(foundPage.name);
       }
-    } else if (templateBlocks) {
-      // Create a new page with template blocks
-      const newPage: LandingPage = {
-        id: `lp-${Date.now()}`,
-        name: "Untitled Landing Page",
-        description: "A new landing page",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        blocks: templateBlocks,
-      };
-      setPage(newPage);
-      setPageName(newPage.name);
     } else {
       // Create a new page with no default blocks
       const newPage: LandingPage = {
@@ -71,7 +55,7 @@ export const LandingPageBuilder: React.FC<LandingPageBuilderProps> = ({
       setPage(newPage);
       setPageName(newPage.name);
     }
-  }, [pageId, templateBlocks]);
+  }, [pageId]);
 
   const handleAddBlock = (block: LandingPageBlock) => {
     if (!page) return;
@@ -177,41 +161,6 @@ export const LandingPageBuilder: React.FC<LandingPageBuilderProps> = ({
 
   const selectedBlock =
     page.blocks.find((b) => b.id === selectedBlockId) || null;
-
-  if (isPreview) {
-    return (
-      <DashboardLayout>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900">{pageName}</h1>
-              <p className="text-gray-600 mt-2">Template Preview</p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={onBack}
-              className="gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back to Templates
-            </Button>
-          </div>
-
-          <div className="bg-white rounded-lg border p-8">
-            <LandingPagePreview
-              page={page}
-              selectedBlockId={selectedBlockId}
-              onSelectBlock={setSelectedBlockId}
-              onUpdateBlock={handleUpdateBlock}
-              onDeleteBlock={handleDeleteBlock}
-              onMoveBlock={handleMoveBlock}
-              isPreview={true}
-            />
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <div className="flex h-screen bg-gray-100">

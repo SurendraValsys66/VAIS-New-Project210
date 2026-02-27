@@ -18,20 +18,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   getLandingPagesFromLocalStorage,
   deleteLandingPageFromLocalStorage,
-  saveLandingPageToLocalStorage,
 } from "@/components/landing-page-builder/utils";
-import { TemplatesVisualGallery } from "@/components/landing-page-builder/TemplatesVisualGallery";
-import { landingPageTemplates } from "@/components/landing-page-builder/templates";
-import { Layers, Plus, Trash2, Edit2, Eye, ChevronLeft } from "lucide-react";
+import { Layers, Plus, Trash2, Edit2, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type View = "templates" | "my-pages" | "editor" | "template-preview";
+type View = "list" | "editor";
 
 export default function LandingPages() {
   const [pages, setPages] = useState<LandingPage[]>([]);
-  const [view, setView] = useState<View>("templates");
+  const [view, setView] = useState<View>("list");
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
-  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -59,35 +55,11 @@ export default function LandingPages() {
     setDeleteTargetId(null);
   };
 
-  const handleSelectTemplate = (templateIndex: number) => {
-    const template = landingPageTemplates[templateIndex];
-    if (!template) return;
-
-    // Create a new page from template
-    const newPage: LandingPage = {
-      id: Date.now().toString(),
-      name: template.name,
-      description: template.description,
-      blocks: template.blocks,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    saveLandingPageToLocalStorage(newPage);
-    setSelectedPageId(newPage.id);
-    setView("editor");
-  };
-
-  const handlePreviewTemplate = (templateIndex: number) => {
-    setSelectedTemplateIndex(templateIndex);
-    setView("template-preview");
-  };
-
   const handleBackToList = () => {
     // Refresh pages from localStorage
     const loaded = getLandingPagesFromLocalStorage();
     setPages(loaded);
-    setView("templates");
+    setView("list");
     setSelectedPageId(null);
   };
 
@@ -114,181 +86,132 @@ export default function LandingPages() {
     );
   }
 
-  if (view === "template-preview" && selectedTemplateIndex !== null) {
-    const template = landingPageTemplates[selectedTemplateIndex];
-    return (
-      <LandingPageBuilder
-        templateBlocks={template.blocks}
-        onBack={() => {
-          setView("templates");
-          setSelectedTemplateIndex(null);
-        }}
-        isPreview={true}
-      />
-    );
-  }
-
-  if (view === "my-pages") {
-    return (
-      <DashboardLayout>
-        <div className="space-y-8">
-          {/* Header with back button */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setView("templates")}
-                className="gap-2"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back to Templates
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Pages</h1>
-                <p className="text-gray-600 mt-2">
-                  Your created landing pages
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={handleNewPage}
-              className="bg-valasys-orange hover:bg-orange-600"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create New Page
-            </Button>
-          </div>
-
-          {/* Search Bar */}
-          {pages.length > 0 && (
-            <div className="flex gap-4">
-              <Input
-                placeholder="Search landing pages..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="max-w-md"
-              />
-            </div>
-          )}
-
-          {/* Empty State */}
-          {pages.length === 0 && (
-            <Alert>
-              <AlertDescription>
-                No landing pages yet. Start by selecting a template above.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Pages Grid */}
-          {filteredPages.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPages.map((page) => (
-                <Card
-                  key={page.id}
-                  className="overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  {/* Preview Area */}
-                  <div className="w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <div className="text-center">
-                      <Layers className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500">
-                        {page.blocks.length} sections
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{page.name}</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {page.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Metadata */}
-                      <div className="flex items-center gap-4 text-xs text-gray-600 border-t pt-4">
-                        <div>
-                          <span className="font-medium">Created:</span>{" "}
-                          {formatDate(page.createdAt)}
-                        </div>
-                        <div>
-                          <span className="font-medium">Updated:</span>{" "}
-                          {formatDate(page.updatedAt)}
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex gap-2 pt-4 border-t">
-                        <Button
-                          onClick={() => handleEditPage(page.id)}
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-2"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                          Edit
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setDeleteTargetId(page.id);
-                            setShowDeleteDialog(true);
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {/* No Results */}
-          {filteredPages.length === 0 && pages.length > 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-600">
-                No landing pages match your search. Try adjusting your search
-                query.
-              </p>
-            </div>
-          )}
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  // Default view: Templates
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        {/* Header with link to My Pages */}
+        {/* Header */}
         <div className="flex items-start justify-between">
-          <TemplatesVisualGallery
-            onSelectTemplate={handleSelectTemplate}
-            onPreview={handlePreviewTemplate}
-          />
-          {pages.length > 0 && (
-            <Button
-              onClick={() => setView("my-pages")}
-              variant="outline"
-              className="absolute top-8 right-8 gap-2"
-            >
-              <Layers className="w-4 h-4" />
-              My Pages ({pages.length})
-            </Button>
-          )}
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <Layers className="w-8 h-8 text-valasys-orange" />
+              Landing Pages
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Create and manage custom landing pages with drag and drop blocks
+            </p>
+          </div>
+          <Button
+            onClick={handleNewPage}
+            className="bg-valasys-orange hover:bg-orange-600"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create New Page
+          </Button>
         </div>
+
+        {/* Search Bar */}
+        <div className="flex gap-4">
+          <Input
+            placeholder="Search landing pages..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+        </div>
+
+        {/* Empty State */}
+        {filteredPages.length === 0 && pages.length === 0 && (
+          <Alert>
+            <AlertDescription>
+              No landing pages yet. Click "Create New Page" to get started with
+              a drag-and-drop page builder.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Pages Grid */}
+        {filteredPages.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPages.map((page) => (
+              <Card
+                key={page.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                {/* Preview Area */}
+                <div className="w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="text-center">
+                    <Layers className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">
+                      {page.blocks.length} blocks
+                    </p>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg">{page.name}</CardTitle>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        {page.description}
+                      </p>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Metadata */}
+                    <div className="flex items-center gap-4 text-xs text-gray-600 border-t pt-4">
+                      <div>
+                        <span className="font-medium">Created:</span>{" "}
+                        {formatDate(page.createdAt)}
+                      </div>
+                      <div>
+                        <span className="font-medium">Updated:</span>{" "}
+                        {formatDate(page.updatedAt)}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-4 border-t">
+                      <Button
+                        onClick={() => handleEditPage(page.id)}
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 gap-2"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setDeleteTargetId(page.id);
+                          setShowDeleteDialog(true);
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* No Results */}
+        {filteredPages.length === 0 && pages.length > 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">
+              No landing pages match your search. Try adjusting your search
+              query.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Dialog */}
