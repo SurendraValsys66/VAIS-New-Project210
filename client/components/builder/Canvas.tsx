@@ -52,6 +52,8 @@ const DEFAULT_LAYOUT: BuilderComponent[] = [
 ];
 
 export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ onBack, templateId, initialLayout }) => {
+  const [isPreviewMode, setIsPreviewMode] = React.useState(false);
+
   const layoutConfig = initialLayout
     ? initialLayout
     : templateId
@@ -85,6 +87,48 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ onBack, templateId
     }),
   });
 
+  // If in preview mode, show full page preview without editor UI
+  if (isPreviewMode) {
+    return (
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-white">
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="h-14 border-b bg-white px-6 flex items-center justify-between shadow-sm z-10">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold text-gray-900 tracking-tight">
+                {templateId === "online-marketing-conference"
+                  ? "Online Marketing Conference"
+                  : "New Page"}
+              </span>
+              <span className="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full font-black uppercase tracking-wider">
+                Preview
+              </span>
+            </div>
+            <button
+              onClick={() => setIsPreviewMode(false)}
+              className="text-sm font-medium px-4 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              Back to Editor
+            </button>
+          </header>
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-4">
+              {layout.map((comp) => (
+                <ComponentRenderer
+                  key={comp.id}
+                  component={comp}
+                  onUpdate={() => {}}
+                  onRemove={() => {}}
+                  onMove={() => {}}
+                  onAdd={() => {}}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-gray-100">
       <Sidebar />
@@ -115,7 +159,10 @@ export const BuilderCanvas: React.FC<BuilderCanvasProps> = ({ onBack, templateId
           </div>
           <div className="flex items-center gap-3">
             <div className="text-xs text-gray-400 mr-2">Auto-saved 2 min ago</div>
-            <button className="text-sm font-medium px-4 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => setIsPreviewMode(true)}
+              className="text-sm font-medium px-4 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
               Preview
             </button>
             <button className="text-sm font-medium px-4 py-1.5 rounded-lg bg-valasys-orange text-white hover:bg-valasys-orange/90 transition-colors shadow-sm">
