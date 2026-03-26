@@ -271,12 +271,12 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         placeholder?: string;
         property?: "width" | "height" | "fontSize";
       }) => {
-        // For width in percentage, cap at 100
-        const maxValue = property === "width" && unit === "%" ? 100 : undefined;
+        // For width and height in percentage, cap at 100
+        const isPercentageCapped =
+          (property === "width" || property === "height") && unit === "%";
+        const maxValue = isPercentageCapped ? 100 : undefined;
         const displayValue =
-          property === "width" && unit === "%" && Number(value) > 100
-            ? "100"
-            : value;
+          isPercentageCapped && Number(value) > 100 ? "100" : value;
 
         return (
           <div className="space-y-2 px-4 py-3 border-b border-gray-100">
@@ -287,8 +287,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                 value={displayValue}
                 onChange={(e) => {
                   let newValue = e.target.value;
-                  // Prevent width from exceeding 100 when unit is %
-                  if (property === "width" && unit === "%" && Number(newValue) > 100) {
+                  // Prevent width and height from exceeding 100 when unit is %
+                  if (isPercentageCapped && Number(newValue) > 100) {
                     newValue = "100";
                   }
                   onChange(newValue);
