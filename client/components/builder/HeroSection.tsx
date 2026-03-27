@@ -289,8 +289,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   if (isSelected) e.stopPropagation();
                 }}
                 className={cn(
-                  isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none"
+                  isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none",
+                  "break-words"
                 )}
+                style={{
+                  direction: "ltr",
+                  wordWrap: "break-word",
+                  overflowWrap: "break-word",
+                  whiteSpace: "normal",
+                }}
               >
                 {element.content}
               </span>
@@ -325,9 +332,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 if (isSelected) e.stopPropagation();
               }}
               className={cn(
-                "text-4xl lg:text-6xl font-black text-gray-900 tracking-tight leading-none max-w-4xl",
+                "text-4xl lg:text-6xl font-black text-gray-900 tracking-tight leading-none max-w-4xl break-words",
                 isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none"
               )}
+              style={{
+                direction: "ltr",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                whiteSpace: "normal",
+              }}
             >
               {element.content}
             </h1>
@@ -361,9 +374,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 if (isSelected) e.stopPropagation();
               }}
               className={cn(
-                "text-lg text-gray-600 max-w-2xl leading-relaxed",
+                "text-lg text-gray-600 max-w-2xl leading-relaxed break-words",
                 isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none"
               )}
+              style={{
+                direction: "ltr",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                whiteSpace: "normal",
+              }}
             >
               {element.content}
             </p>
