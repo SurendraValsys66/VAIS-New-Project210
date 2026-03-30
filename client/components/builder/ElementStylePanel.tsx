@@ -345,16 +345,20 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         key === "heroPrimaryButtonText" ||
         key === "heroSecondaryButtonText" ||
         key === "badgeWidth" ||
-        key === "badgeFontSize" ||
         key === "headingWidth" ||
-        key === "headingFontSize" ||
         key === "paragraphWidth" ||
-        key === "paragraphFontSize" ||
         key === "buttonWidth" ||
-        key === "buttonFontSize" ||
         key === "selectedHeroElement"
       ) {
         updates[key] = nextValue;
+      } else if (
+        key === "badgeFontSize" ||
+        key === "headingFontSize" ||
+        key === "paragraphFontSize" ||
+        key === "buttonFontSize"
+      ) {
+        // Convert font size values to numbers
+        updates[key] = nextValue === "" ? undefined : Number(nextValue);
       } else if (key === "displayConditions" || key === "contentVisibility") {
         // These are special properties that don't need conversion
         updates[key] = value;
@@ -383,6 +387,13 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         }
         pendingUpdatesRef.current = {};
         onUpdate(updates);
+        // Also update local state for font size to ensure UI shows correct value
+        if (key === "badgeFontSize" || key === "headingFontSize" || key === "paragraphFontSize" || key === "buttonFontSize") {
+          setStyles((prev) => ({
+            ...prev,
+            [key]: String(updates[key] || ""),
+          }));
+        }
         return;
       }
 

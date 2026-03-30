@@ -97,6 +97,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     if (component.backgroundColor) {
       styles.backgroundColor = component.backgroundColor;
     }
+    // Apply text alignment
+    if (component.textAlign) {
+      styles.textAlign = component.textAlign;
+    }
+    // Apply content alignment (justify-content)
+    if (component.justifyContent) {
+      styles.justifyContent = component.justifyContent;
+    }
     return styles;
   };
 
