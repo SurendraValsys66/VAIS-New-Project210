@@ -143,13 +143,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     resizeTextarea(paragraphTextareaRef.current);
   }, [component.heroHeadingText, component.heroDescriptionText, editingElementId]);
 
-  const handleCopyElement = (elementId: string, content: string) => {
+  const handleCopyElement = (elementId: string) => {
+    // Get the actual current content from the component
+    const contentMap: Record<string, string> = {
+      badge: component.heroBadgeText || "✨ New Release",
+      heading: component.heroHeadingText || "Build your vision faster than ever.",
+      paragraph: component.heroDescriptionText || "The world's most advanced landing page builder. Drag, drop, and launch in minutes, not days.",
+      primaryButton: component.heroPrimaryButtonText || "Start Free Trial",
+      secondaryButton: component.heroSecondaryButtonText || "Watch Demo",
+    };
+
+    const contentToCopy = contentMap[elementId] || "";
+
     // Store in local clipboard state
-    setClipboardData({ elementId, content });
+    setClipboardData({ elementId, content: contentToCopy });
 
     // Also copy to browser clipboard
-    navigator.clipboard.writeText(content).then(() => {
-      console.log("Copied to clipboard:", content);
+    navigator.clipboard.writeText(contentToCopy).then(() => {
+      console.log("Copied to clipboard:", contentToCopy);
     }).catch(err => {
       console.error("Failed to copy:", err);
     });
@@ -161,12 +172,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       badge: "✨ New Release",
       heading: "Build your vision faster than ever.",
       paragraph: "The world's most advanced landing page builder. Drag, drop, and launch in minutes, not days.",
+      primaryButton: "Start Free Trial",
+      secondaryButton: "Watch Demo",
     };
 
     const updateMap: Record<string, keyof BuilderComponent> = {
       badge: "heroBadgeText",
       heading: "heroHeadingText",
       paragraph: "heroDescriptionText",
+      primaryButton: "heroPrimaryButtonText",
+      secondaryButton: "heroSecondaryButtonText",
     };
 
     const key = updateMap[elementId];
@@ -177,16 +192,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     }
   };
 
-  const handleAddElement = (elementId: string, content: string) => {
+  const handleAddElement = (elementId: string) => {
     // Paste clipboard content or duplicate current element
-    if (clipboardData) {
-      // If clipboard has data, paste it
-      const updateMap: Record<string, keyof BuilderComponent> = {
-        badge: "heroBadgeText",
-        heading: "heroHeadingText",
-        paragraph: "heroDescriptionText",
-      };
+    const updateMap: Record<string, keyof BuilderComponent> = {
+      badge: "heroBadgeText",
+      heading: "heroHeadingText",
+      paragraph: "heroDescriptionText",
+      primaryButton: "heroPrimaryButtonText",
+      secondaryButton: "heroSecondaryButtonText",
+    };
 
+    if (clipboardData) {
+      // If clipboard has data, paste it to the target element
       const sourceKey = updateMap[clipboardData.elementId];
       const targetKey = updateMap[elementId];
 
@@ -196,20 +213,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         setClipboardData(null);
       }
     } else {
-      // Otherwise duplicate the current element
-      const element = heroElements.find(e => e.id === elementId);
-      if (element) {
-        const updateMap: Record<string, keyof BuilderComponent> = {
-          badge: "heroBadgeText",
-          heading: "heroHeadingText",
-          paragraph: "heroDescriptionText",
-        };
+      // Otherwise duplicate the current element by copying its content to itself
+      // (In the context of hero elements, this creates a duplicate)
+      const currentValue =
+        elementId === "badge" ? component.heroBadgeText :
+        elementId === "heading" ? component.heroHeadingText :
+        elementId === "paragraph" ? component.heroDescriptionText :
+        elementId === "primaryButton" ? component.heroPrimaryButtonText :
+        elementId === "secondaryButton" ? component.heroSecondaryButtonText :
+        "";
 
-        const key = updateMap[elementId];
-        if (key) {
-          onUpdate(component.id, { [key]: content });
-          console.log("Duplicated element:", content);
-        }
+      const key = updateMap[elementId];
+      if (key && currentValue) {
+        // Copy to clipboard for next paste operation
+        setClipboardData({ elementId, content: currentValue });
+        navigator.clipboard.writeText(currentValue).catch(err => {
+          console.error("Failed to copy:", err);
+        });
+        console.log("Duplicated element, copied to clipboard:", currentValue);
       }
     }
   };
@@ -263,7 +284,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleCopyElement(element.id, element.content);
+              handleCopyElement(element.id);
               console.log("Copy clicked for element:", element.id);
             }}
             className="h-6 w-6 flex items-center justify-center hover:bg-valasys-orange/10 rounded transition-colors cursor-pointer"
@@ -276,7 +297,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleAddElement(element.id, element.content);
+              handleAddElement(element.id);
               console.log("Add/Paste clicked for element:", element.id);
             }}
             className="h-6 w-6 flex items-center justify-center hover:bg-valasys-orange/10 rounded transition-colors cursor-pointer"
