@@ -242,7 +242,7 @@ export const AIBuilder: React.FC<AIBuilderProps> = ({ onBack, onGenerateComplete
   if (generatedLayout) {
     return (
       <DashboardLayout>
-        <div className="space-y-8">
+        <div className="space-y-8 bg-white min-h-full p-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
@@ -605,12 +605,12 @@ export const AIBuilder: React.FC<AIBuilderProps> = ({ onBack, onGenerateComplete
   // Initial View
   return (
     <DashboardLayout>
-      <div className="flex h-full overflow-hidden">
+      <div className="flex h-full bg-white">
         {/* Left Sidebar */}
         <AIBuilderSidebar />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col items-center justify-center py-12 px-4">
+        <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 bg-white">
           {/* Greeting Section */}
           <div className="text-center mb-12 mt-8">
             {/* Logo/Icon */}
