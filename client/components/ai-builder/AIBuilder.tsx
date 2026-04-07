@@ -242,7 +242,7 @@ export const AIBuilder: React.FC<AIBuilderProps> = ({ onBack, onGenerateComplete
   if (generatedLayout) {
     return (
       <DashboardLayout>
-        <div className="space-y-8 bg-white min-h-full p-8">
+        <div className="space-y-8 bg-white min-h-full -mx-4 lg:-mx-6 -mb-4 px-8 py-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
@@ -343,7 +343,7 @@ export const AIBuilder: React.FC<AIBuilderProps> = ({ onBack, onGenerateComplete
           }
         `}</style>
         <DashboardLayout>
-        <div className="flex h-screen overflow-hidden bg-white" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        <div className="flex h-full bg-white -mx-4 lg:-mx-6 -mb-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           {/* Left Chat Sidebar */}
           <div className="w-96 border-r border-gray-200 flex flex-col bg-white">
             {/* Header */}
@@ -605,12 +605,12 @@ export const AIBuilder: React.FC<AIBuilderProps> = ({ onBack, onGenerateComplete
   // Initial View
   return (
     <DashboardLayout>
-      <div className="flex h-full bg-white">
+      <div className="flex h-full bg-white -mx-4 lg:-mx-6 -mb-4">
         {/* Left Sidebar */}
         <AIBuilderSidebar />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 bg-white">
+        <div className="flex-1 flex flex-col items-center justify-center bg-white">
           {/* Greeting Section */}
           <div className="text-center mb-12 mt-8">
             {/* Logo/Icon */}
